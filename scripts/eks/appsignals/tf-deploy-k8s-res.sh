@@ -9,6 +9,8 @@ ACCOUNT_ID=`aws sts get-caller-identity | jq .Account -r`
 # change the directory to the script location so that the relative path can work
 cd "$(dirname "$0")"
 
+cd ../../../terraform/eks/
+
 host="petclinic-database.cufgmmyvvbb2.us-west-2.rds.amazonaws.com"
 port="5432"
 
