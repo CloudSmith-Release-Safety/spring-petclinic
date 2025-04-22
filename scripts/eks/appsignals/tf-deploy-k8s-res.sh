@@ -9,12 +9,8 @@ ACCOUNT_ID=`aws sts get-caller-identity | jq .Account -r`
 # change the directory to the script location so that the relative path can work
 cd "$(dirname "$0")"
 
-cd ../../../terraform/eks/
-
-db_endpoint=`terraform output -raw postgres_endpoint`
-
-host=$(echo $db_endpoint | awk -F ':' '{print $1}')
-port=$(echo $db_endpoint | awk -F ':' '{print $2}')
+host="petclinic-database.cufgmmyvvbb2.us-west-2.rds.amazonaws.com"
+port="5432"
 
 cd ../../scripts/eks/appsignals/
 
