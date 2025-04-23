@@ -32,5 +32,5 @@ echo "Started the traffic generator to send traffic to http://${endpoint}"
 kubectl ${OPERATION} -f ./sample-app/alb-ingress
 
 # Force rollout restart of all deployments to ensure they pick up the latest images
-echo "Forcing rollout restart of all deployments to ensure they use the latest images"
-kubectl rollout restart deployment --namespace=$NAMESPACE
+# echo "Forcing rollout restart of all deployments to ensure they use the latest images"
+# kubectl rollout restart deployment --namespace=$NAMESPACE
