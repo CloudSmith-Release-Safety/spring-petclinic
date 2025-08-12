@@ -4,24 +4,127 @@
   "repo_url": "https://github.com/CloudSmith-Release-Safety/spring-petclinic",
   "infrastructure_providers": [
     {
-      "provider_id": "kinesis_data_stream",
+      "provider_id": "bedrock_service",
+      "resource_type": "Bedrock",
+      "resource_identifier": "amazon.titan-text-express-v1",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockRuntimeV1Service.java",
+      "infrastructure_type": "SDK-Direct",
+      "description": "Amazon Bedrock service for generative AI models, providing text generation capabilities",
+      "interfaces": [
+        {
+          "interface_type": "api",
+          "endpoint_pattern": "bedrock.{region}.amazonaws.com",
+          "operations": ["invokeModel"],
+          "authentication": "IAM"
+        }
+      ],
+      "configuration": {
+        "model_id": "amazon.titan-text-express-v1",
+        "region_discovery": "environment or EC2 metadata"
+      },
+      "security": {
+        "authentication": "WebIdentityToken for EKS, default credentials for EC2"
+      },
+      "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"],
+      "provider_type": "external"
+    },
+    {
+      "provider_id": "bedrock_claude_model",
+      "resource_type": "Bedrock",
+      "resource_identifier": "anthropic.claude-v2:1",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockRuntimeV2Service.java",
+      "infrastructure_type": "SDK-Direct",
+      "description": "Anthropic Claude model accessed through Amazon Bedrock for generative AI capabilities",
+      "interfaces": [
+        {
+          "interface_type": "api",
+          "endpoint_pattern": "bedrock-runtime.{region}.amazonaws.com",
+          "operations": ["invokeModel"],
+          "authentication": "IAM"
+        }
+      ],
+      "configuration": {
+        "model_id": "anthropic.claude-v2:1",
+        "region_discovery": "environment or EC2 metadata"
+      },
+      "security": {
+        "authentication": "WebIdentityToken for EKS, default credentials for EC2"
+      },
+      "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE"],
+      "provider_type": "external"
+    },
+    {
+      "provider_id": "bedrock_knowledge_base",
+      "resource_type": "BedrockAgent",
+      "resource_identifier": "knowledgebase-*",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockAgentV1Service.java",
+      "infrastructure_type": "SDK-Direct",
+      "description": "Amazon Bedrock Knowledge Base for querying structured information through generative AI",
+      "interfaces": [
+        {
+          "interface_type": "api",
+          "endpoint_pattern": "bedrock-agent.{region}.amazonaws.com",
+          "operations": ["listKnowledgeBases", "getKnowledgeBase"],
+          "authentication": "IAM"
+        }
+      ],
+      "configuration": {
+        "region_discovery": "environment or EC2 metadata"
+      },
+      "security": {
+        "authentication": "WebIdentityToken for EKS, default credentials for EC2"
+      },
+      "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"],
+      "provider_type": "external"
+    },
+    {
+      "provider_id": "bedrock_guardrails",
+      "resource_type": "Bedrock",
+      "resource_identifier": "guardrail-*",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockV1Service.java",
+      "infrastructure_type": "SDK-Direct",
+      "description": "Amazon Bedrock Guardrails for implementing safety measures on generative AI outputs",
+      "interfaces": [
+        {
+          "interface_type": "api",
+          "endpoint_pattern": "bedrock.{region}.amazonaws.com",
+          "operations": ["listGuardrails", "getGuardrail"],
+          "authentication": "IAM"
+        }
+      ],
+      "configuration": {
+        "region_discovery": "environment or EC2 metadata"
+      },
+      "security": {
+        "authentication": "WebIdentityToken for EKS, default credentials for EC2"
+      },
+      "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"],
+      "provider_type": "external"
+    },
+    {
+      "provider_id": "kinesis_stream",
       "resource_type": "Kinesis",
       "resource_identifier": "apm_test",
       "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/KinesisService.java",
       "infrastructure_type": "SDK-Direct",
-      "description": "Kinesis data stream for application performance monitoring and event data collection",
+      "description": "Amazon Kinesis data stream for real-time data collection and processing",
       "interfaces": [
         {
           "interface_type": "stream",
-          "endpoint_pattern": "kinesis.${region}.amazonaws.com",
-          "operations": ["CreateStream", "DescribeStream", "GetShardIterator", "GetRecords"],
+          "endpoint_pattern": "kinesis.{region}.amazonaws.com",
+          "operations": ["createStream", "describeStream", "getShardIterator", "getRecords"],
           "authentication": "IAM"
         }
       ],
       "configuration": {
         "stream_name": "apm_test",
-        "shard_count": 1
+        "shard_count": 1,
+        "region_discovery": "environment or EC2 metadata"
       },
+      "security": {
+        "authentication": "WebIdentityToken for EKS, default credentials for EC2"
+      },
+      "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"],
       "provider_type": "internal"
     },
     {
@@ -30,119 +133,48 @@
       "resource_identifier": "apm_test",
       "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/SqsService.java",
       "infrastructure_type": "SDK-Direct",
-      "description": "SQS queue for performance monitoring and asynchronous processing",
+      "description": "Amazon SQS queue for message handling and asynchronous processing",
       "interfaces": [
         {
           "interface_type": "queue",
-          "endpoint_pattern": "sqs.${region}.amazonaws.com",
-          "operations": ["CreateQueue", "GetQueueUrl", "SendMessage", "PurgeQueue"],
+          "endpoint_pattern": "sqs.{region}.amazonaws.com",
+          "operations": ["createQueue", "getQueueUrl", "sendMessage", "purgeQueue"],
           "authentication": "IAM"
         }
       ],
       "configuration": {
         "queue_name": "apm_test",
-        "message_retention_seconds": 345600
+        "region_discovery": "environment or EC2 metadata"
       },
+      "security": {
+        "authentication": "WebIdentityToken for EKS, default credentials for EC2"
+      },
+      "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"],
       "provider_type": "internal"
     },
     {
-      "provider_id": "bedrock_runtime",
-      "resource_type": "Bedrock",
-      "resource_identifier": "amazon.titan-text-express-v1",
-      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockRuntimeV1Service.java",
-      "infrastructure_type": "SDK-Direct",
-      "description": "Amazon Bedrock AI model for generating pet disease information",
-      "interfaces": [
-        {
-          "interface_type": "api",
-          "endpoint_pattern": "bedrock-runtime.${region}.amazonaws.com",
-          "operations": ["InvokeModel"],
-          "authentication": "IAM"
-        }
-      ],
-      "configuration": {
-        "model_id": "amazon.titan-text-express-v1",
-        "temperature": 0.8,
-        "top_p": 0.9,
-        "max_token_count": 1000
-      },
-      "provider_type": "external"
-    },
-    {
-      "provider_id": "bedrock_runtime_claude",
-      "resource_type": "Bedrock",
-      "resource_identifier": "anthropic.claude-3-sonnet-20240229-v1:0",
-      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockRuntimeV2Service.java",
-      "infrastructure_type": "SDK-Direct",
-      "description": "Anthropic Claude AI model for pet health-related information",
-      "interfaces": [
-        {
-          "interface_type": "api",
-          "endpoint_pattern": "bedrock-runtime.${region}.amazonaws.com",
-          "operations": ["InvokeModel"],
-          "authentication": "IAM"
-        }
-      ],
-      "configuration": {
-        "model_id": "anthropic.claude-3-sonnet-20240229-v1:0"
-      },
-      "provider_type": "external"
-    },
-    {
-      "provider_id": "bedrock_kb",
-      "resource_type": "Bedrock",
-      "resource_identifier": "${knowledge_base_id}",
-      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockAgentV1Service.java",
-      "infrastructure_type": "SDK-Direct",
-      "description": "Amazon Bedrock Knowledge Base for accessing veterinary knowledge",
-      "interfaces": [
-        {
-          "interface_type": "api",
-          "endpoint_pattern": "bedrock.${region}.amazonaws.com",
-          "operations": ["GetKnowledgeBase"],
-          "authentication": "IAM"
-        }
-      ],
-      "configuration": {},
-      "provider_type": "external"
-    },
-    {
-      "provider_id": "bedrock_guardrails",
-      "resource_type": "Bedrock",
-      "resource_identifier": "${guardrail_id}",
-      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockV1Service.java",
-      "infrastructure_type": "SDK-Direct",
-      "description": "Amazon Bedrock Guardrails for content moderation",
-      "interfaces": [
-        {
-          "interface_type": "api",
-          "endpoint_pattern": "bedrock.${region}.amazonaws.com",
-          "operations": ["GetGuardrail"],
-          "authentication": "IAM"
-        }
-      ],
-      "configuration": {},
-      "provider_type": "external"
-    },
-    {
-      "provider_id": "s3_bucket",
+      "provider_id": "s3_service",
       "resource_type": "S3",
-      "resource_identifier": "${trace_data_bucket}",
+      "resource_identifier": "${TRACE_DATA_BUCKET}",
       "file_path": "spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/aws/S3Service.java",
       "infrastructure_type": "SDK-Direct",
-      "description": "S3 bucket for storing trace data and monitoring information",
+      "description": "Amazon S3 for object storage, used for storing and retrieving trace data",
       "interfaces": [
         {
           "interface_type": "storage",
-          "endpoint_pattern": "s3.amazonaws.com/${trace_data_bucket}",
-          "operations": ["ListBuckets"],
+          "endpoint_pattern": "s3.amazonaws.com",
+          "operations": ["listBuckets"],
           "authentication": "IAM"
         }
       ],
       "configuration": {
-        "region": "us-east-1"
+        "region": "US_EAST_1",
+        "bucket": "${TRACE_DATA_BUCKET}"
       },
-      "environment_variables": ["TRACE_DATA_BUCKET", "TRACE_DATA_S3_KEY"],
+      "security": {
+        "authentication": "WebIdentityToken for EKS, default credentials for EC2"
+      },
+      "environment_variables": ["TRACE_DATA_BUCKET", "TRACE_DATA_S3_KEY", "AWS_WEB_IDENTITY_TOKEN_FILE"],
       "provider_type": "external"
     },
     {
@@ -151,413 +183,574 @@
       "resource_identifier": "apm_test",
       "file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/aws/DdbService.java",
       "infrastructure_type": "SDK-Direct",
-      "description": "DynamoDB table for storing application monitoring data",
+      "description": "Amazon DynamoDB table for storing structured data with key-value access patterns",
       "interfaces": [
         {
           "interface_type": "database",
-          "endpoint_pattern": "dynamodb.${region}.amazonaws.com",
-          "operations": ["CreateTable", "DescribeTable", "PutItem"],
+          "endpoint_pattern": "dynamodb.{region}.amazonaws.com",
+          "operations": ["describeTable", "createTable", "putItem"],
           "authentication": "IAM"
         }
       ],
       "configuration": {
         "table_name": "apm_test",
-        "key_schema": [
-          {
-            "attribute_name": "id",
-            "key_type": "HASH"
-          }
-        ],
-        "provisioned_throughput": {
-          "read_capacity_units": 1,
-          "write_capacity_units": 1
-        }
+        "key_schema": {"hash_key": "id"},
+        "provisioned_throughput": {"read_capacity_units": 1, "write_capacity_units": 1},
+        "region_discovery": "environment or EC2 metadata"
       },
+      "security": {
+        "authentication": "WebIdentityToken for EKS, default credentials for EC2"
+      },
+      "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"],
       "provider_type": "internal"
-    },
-    {
-      "provider_id": "eks_cluster",
-      "resource_type": "EKS",
-      "resource_identifier": "${cluster_name}",
-      "file_path": "scripts/eks/appsignals/sample-app/customers-service-deployment.yaml",
-      "infrastructure_type": "SDK-Direct",
-      "description": "Amazon EKS cluster for running the Spring PetClinic microservices",
-      "interfaces": [
-        {
-          "interface_type": "api",
-          "endpoint_pattern": "eks.${region}.amazonaws.com",
-          "operations": ["DescribeCluster"],
-          "authentication": "IAM"
-        }
-      ],
-      "configuration": {
-        "service_account": "visits-service-account"
-      },
-      "provider_type": "external"
     }
   ],
   "application_consumers": [
     {
-      "consumer_id": "customers_service",
-      "component_type": "microservice",
-      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/CustomersServiceApplication.java",
+      "consumer_id": "bedrock_runtime_v1_consumer",
+      "component_type": "service",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockRuntimeV1Service.java",
       "language": "Java",
-      "description": "Customers service handling pet owner and pet information, with AWS service integrations",
+      "description": "Service that uses Amazon Bedrock Titan model to generate text about pet diseases based on pet type",
       "resource_discovery": {
         "method": "environment variables",
         "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"]
       },
       "authentication": {
         "method": "IAM role",
-        "role_references": ["WebIdentityTokenFileCredentialsProvider", "DefaultCredentialsProvider"]
+        "role_references": ["WebIdentityTokenCredentialsProvider for EKS", "default credentials for EC2"]
       },
       "sdk_usage": {
-        "sdk_type": "AWS SDK for Java v2",
-        "clients": ["KinesisClient", "SqsClient", "AmazonBedrockRuntime"]
+        "sdk_type": "aws-sdk-java-v1",
+        "clients": ["AmazonBedrockRuntime"]
       },
       "package_dependencies": [
-        "software.amazon.awssdk:kinesis",
-        "software.amazon.awssdk:sqs",
-        "software.amazon.awssdk:auth",
+        "com.amazonaws:aws-java-sdk-bedrockruntime"
+      ],
+      "external_dependencies": [
+        {
+          "resource_type": "Bedrock",
+          "resource_name": "amazon.titan-text-express-v1",
+          "repository": "N/A"
+        }
+      ]
+    },
+    {
+      "consumer_id": "bedrock_runtime_v2_consumer",
+      "component_type": "service",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockRuntimeV2Service.java",
+      "language": "Java",
+      "description": "Service that uses Anthropic Claude model through Amazon Bedrock to provide information about pet disease prevention measures",
+      "resource_discovery": {
+        "method": "environment variables",
+        "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE"]
+      },
+      "authentication": {
+        "method": "IAM role",
+        "role_references": ["WebIdentityTokenFileCredentialsProvider for EKS", "default credentials for EC2"]
+      },
+      "sdk_usage": {
+        "sdk_type": "aws-sdk-java-v2",
+        "clients": ["BedrockRuntimeClient"]
+      },
+      "package_dependencies": [
+        "software.amazon.awssdk:bedrockruntime"
+      ],
+      "external_dependencies": [
+        {
+          "resource_type": "Bedrock",
+          "resource_name": "anthropic.claude-v2:1",
+          "repository": "N/A"
+        }
+      ]
+    },
+    {
+      "consumer_id": "bedrock_agent_v1_consumer",
+      "component_type": "service",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockAgentV1Service.java",
+      "language": "Java",
+      "description": "Service that interacts with Bedrock Knowledge Bases for retrieving structured information",
+      "resource_discovery": {
+        "method": "environment variables",
+        "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"]
+      },
+      "authentication": {
+        "method": "IAM role",
+        "role_references": ["WebIdentityTokenCredentialsProvider for EKS", "default credentials for EC2"]
+      },
+      "sdk_usage": {
+        "sdk_type": "aws-sdk-java-v1",
+        "clients": ["AWSBedrockAgent"]
+      },
+      "package_dependencies": [
+        "com.amazonaws:aws-java-sdk-bedrockagent"
+      ],
+      "external_dependencies": [
+        {
+          "resource_type": "BedrockAgent",
+          "resource_name": "Knowledge Base",
+          "repository": "N/A"
+        }
+      ]
+    },
+    {
+      "consumer_id": "bedrock_agent_v2_consumer",
+      "component_type": "service",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockAgentV2Service.java",
+      "language": "Java",
+      "description": "Service that interacts with Bedrock Knowledge Bases using AWS SDK v2",
+      "resource_discovery": {
+        "method": "environment variables",
+        "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE"]
+      },
+      "authentication": {
+        "method": "IAM role",
+        "role_references": ["WebIdentityTokenFileCredentialsProvider for EKS", "default credentials for EC2"]
+      },
+      "sdk_usage": {
+        "sdk_type": "aws-sdk-java-v2",
+        "clients": ["BedrockAgentClient"]
+      },
+      "package_dependencies": [
+        "software.amazon.awssdk:bedrockagent"
+      ],
+      "external_dependencies": [
+        {
+          "resource_type": "BedrockAgent",
+          "resource_name": "Knowledge Base",
+          "repository": "N/A"
+        }
+      ]
+    },
+    {
+      "consumer_id": "bedrock_v1_consumer",
+      "component_type": "service",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockV1Service.java",
+      "language": "Java",
+      "description": "Service that retrieves Bedrock guardrails for AI content moderation",
+      "resource_discovery": {
+        "method": "environment variables",
+        "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"]
+      },
+      "authentication": {
+        "method": "IAM role",
+        "role_references": ["WebIdentityTokenCredentialsProvider for EKS", "default credentials for EC2"]
+      },
+      "sdk_usage": {
+        "sdk_type": "aws-sdk-java-v1",
+        "clients": ["AmazonBedrock"]
+      },
+      "package_dependencies": [
         "com.amazonaws:aws-java-sdk-bedrock"
+      ],
+      "external_dependencies": [
+        {
+          "resource_type": "Bedrock",
+          "resource_name": "Guardrails",
+          "repository": "N/A"
+        }
+      ]
+    },
+    {
+      "consumer_id": "bedrock_v2_consumer",
+      "component_type": "service",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockV2Service.java",
+      "language": "Java",
+      "description": "Service that retrieves Bedrock guardrails using AWS SDK v2",
+      "resource_discovery": {
+        "method": "environment variables",
+        "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE"]
+      },
+      "authentication": {
+        "method": "IAM role",
+        "role_references": ["WebIdentityTokenFileCredentialsProvider for EKS", "default credentials for EC2"]
+      },
+      "sdk_usage": {
+        "sdk_type": "aws-sdk-java-v2",
+        "clients": ["BedrockClient"]
+      },
+      "package_dependencies": [
+        "software.amazon.awssdk:bedrock"
+      ],
+      "external_dependencies": [
+        {
+          "resource_type": "Bedrock",
+          "resource_name": "Guardrails",
+          "repository": "N/A"
+        }
+      ]
+    },
+    {
+      "consumer_id": "kinesis_service_consumer",
+      "component_type": "service",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/KinesisService.java",
+      "language": "Java",
+      "description": "Service that creates and reads from a Kinesis data stream named 'apm_test'",
+      "resource_discovery": {
+        "method": "environment variables",
+        "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"]
+      },
+      "authentication": {
+        "method": "IAM role",
+        "role_references": ["WebIdentityTokenFileCredentialsProvider for EKS", "default credentials for EC2"]
+      },
+      "sdk_usage": {
+        "sdk_type": "aws-sdk-java-v2",
+        "clients": ["KinesisClient"]
+      },
+      "package_dependencies": [
+        "software.amazon.awssdk:kinesis"
       ],
       "internal_dependencies": [
         {
           "resource_type": "Kinesis",
           "resource_name": "apm_test",
           "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/KinesisService.java"
-        },
-        {
-          "resource_type": "SQS",
-          "resource_name": "apm_test",
-          "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/SqsService.java"
-        }
-      ],
-      "external_dependencies": [
-        {
-          "resource_type": "Bedrock",
-          "resource_name": "amazon.titan-text-express-v1",
-          "repository": "external-ai-models"
-        },
-        {
-          "resource_type": "Bedrock",
-          "resource_name": "anthropic.claude-3-sonnet-20240229-v1:0",
-          "repository": "external-ai-models"
         }
       ]
     },
     {
-      "consumer_id": "vets_service",
-      "component_type": "microservice",
-      "file_path": "spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/VetsServiceApplication.java",
+      "consumer_id": "sqs_service_consumer",
+      "component_type": "service",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/SqsService.java",
       "language": "Java",
-      "description": "Vets service providing veterinary professional information and S3 interaction",
-      "resource_discovery": {
-        "method": "environment variables",
-        "environment_variables": ["AWS_WEB_IDENTITY_TOKEN_FILE", "TRACE_DATA_BUCKET", "TRACE_DATA_S3_KEY"]
-      },
-      "authentication": {
-        "method": "IAM role",
-        "role_references": ["WebIdentityTokenFileCredentialsProvider", "DefaultCredentialsProvider"]
-      },
-      "sdk_usage": {
-        "sdk_type": "AWS SDK for Java v2",
-        "clients": ["S3Client"]
-      },
-      "package_dependencies": [
-        "software.amazon.awssdk:s3",
-        "software.amazon.awssdk:auth"
-      ],
-      "internal_dependencies": [],
-      "external_dependencies": [
-        {
-          "resource_type": "S3",
-          "resource_name": "${trace_data_bucket}",
-          "repository": "monitoring-infrastructure"
-        }
-      ]
-    },
-    {
-      "consumer_id": "visits_service",
-      "component_type": "microservice",
-      "file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/VisitsServiceApplication.java",
-      "language": "Java",
-      "description": "Visits service for managing pet visit records with DynamoDB integration",
+      "description": "Service that creates and sends messages to an SQS queue named 'apm_test'",
       "resource_discovery": {
         "method": "environment variables",
         "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"]
       },
       "authentication": {
         "method": "IAM role",
-        "role_references": ["WebIdentityTokenFileCredentialsProvider", "DefaultCredentialsProvider"]
+        "role_references": ["WebIdentityTokenFileCredentialsProvider for EKS", "default credentials for EC2"]
       },
       "sdk_usage": {
-        "sdk_type": "AWS SDK for Java v2",
+        "sdk_type": "aws-sdk-java-v2",
+        "clients": ["SqsClient"]
+      },
+      "package_dependencies": [
+        "software.amazon.awssdk:sqs"
+      ],
+      "internal_dependencies": [
+        {
+          "resource_type": "SQS",
+          "resource_name": "apm_test",
+          "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/SqsService.java"
+        }
+      ]
+    },
+    {
+      "consumer_id": "s3_service_consumer",
+      "component_type": "service",
+      "file_path": "spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/aws/S3Service.java",
+      "language": "Java",
+      "description": "Service that lists S3 buckets, potentially for storing trace data",
+      "resource_discovery": {
+        "method": "environment variables",
+        "environment_variables": ["TRACE_DATA_BUCKET", "TRACE_DATA_S3_KEY", "AWS_WEB_IDENTITY_TOKEN_FILE"]
+      },
+      "authentication": {
+        "method": "IAM role",
+        "role_references": ["WebIdentityTokenFileCredentialsProvider for EKS", "default credentials for EC2"]
+      },
+      "sdk_usage": {
+        "sdk_type": "aws-sdk-java-v2",
+        "clients": ["S3Client"]
+      },
+      "package_dependencies": [
+        "software.amazon.awssdk:s3"
+      ],
+      "external_dependencies": [
+        {
+          "resource_type": "S3",
+          "resource_name": "${TRACE_DATA_BUCKET}",
+          "repository": "N/A"
+        }
+      ]
+    },
+    {
+      "consumer_id": "dynamodb_service_consumer",
+      "component_type": "service",
+      "file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/aws/DdbService.java",
+      "language": "Java",
+      "description": "Service that creates and writes to a DynamoDB table named 'apm_test'",
+      "resource_discovery": {
+        "method": "environment variables",
+        "environment_variables": ["AWS_REGION", "AWS_WEB_IDENTITY_TOKEN_FILE", "REGION_FROM_ECS"]
+      },
+      "authentication": {
+        "method": "IAM role",
+        "role_references": ["WebIdentityTokenFileCredentialsProvider for EKS", "default credentials for EC2"]
+      },
+      "sdk_usage": {
+        "sdk_type": "aws-sdk-java-v2",
         "clients": ["DynamoDbClient", "DynamoDbEnhancedClient"]
       },
       "package_dependencies": [
         "software.amazon.awssdk:dynamodb",
-        "software.amazon.awssdk:dynamodb-enhanced",
-        "software.amazon.awssdk:auth"
+        "software.amazon.awssdk:dynamodb-enhanced"
       ],
       "internal_dependencies": [
         {
           "resource_type": "DynamoDB",
           "resource_name": "apm_test",
           "file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/aws/DdbService.java"
-        }
-      ]
-    },
-    {
-      "consumer_id": "pet_resource",
-      "component_type": "controller",
-      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
-      "language": "Java",
-      "description": "REST controller for pet management that uses AWS services for enhanced functionality",
-      "resource_discovery": {
-        "method": "dependency injection"
-      },
-      "authentication": {
-        "method": "inherited"
-      },
-      "sdk_usage": {
-        "sdk_type": "inherited"
-      },
-      "package_dependencies": [],
-      "internal_dependencies": [
-        {
-          "resource_type": "SQS",
-          "resource_name": "apm_test",
-          "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/SqsService.java"
-        },
-        {
-          "resource_type": "Kinesis",
-          "resource_name": "apm_test",
-          "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/KinesisService.java"
-        },
-        {
-          "resource_type": "Bedrock",
-          "resource_name": "amazon.titan-text-express-v1",
-          "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockRuntimeV1Service.java"
-        }
-      ]
-    },
-    {
-      "consumer_id": "visit_resource",
-      "component_type": "controller",
-      "file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/web/VisitResource.java",
-      "language": "Java",
-      "description": "REST controller for managing pet visit records that uses DynamoDB",
-      "resource_discovery": {
-        "method": "dependency injection"
-      },
-      "authentication": {
-        "method": "inherited"
-      },
-      "sdk_usage": {
-        "sdk_type": "inherited"
-      },
-      "package_dependencies": [],
-      "internal_dependencies": [
-        {
-          "resource_type": "DynamoDB",
-          "resource_name": "apm_test",
-          "file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/aws/DdbService.java"
-        }
-      ]
-    },
-    {
-      "consumer_id": "vet_resource",
-      "component_type": "controller",
-      "file_path": "spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/web/VetResource.java",
-      "language": "Java",
-      "description": "REST controller for veterinary professional information that interacts with S3",
-      "resource_discovery": {
-        "method": "dependency injection"
-      },
-      "authentication": {
-        "method": "inherited"
-      },
-      "sdk_usage": {
-        "sdk_type": "inherited"
-      },
-      "package_dependencies": [],
-      "internal_dependencies": [
-        {
-          "resource_type": "S3",
-          "resource_name": "${trace_data_bucket}",
-          "file_path": "spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/aws/S3Service.java"
         }
       ]
     }
   ],
   "connections": [
     {
-      "connection_id": "pet_resource_to_sqs",
-      "consumer_id": "pet_resource",
-      "provider_id": "sqs_queue",
-      "provider_resource_type": "SQS",
-      "operation": "sendMessage",
-      "access_type": "write",
-      "description": "Sends a message to SQS when a new pet is created",
-      "code_snippet": "sqsService.sendMsg();",
-      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
-      "target_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/SqsService.java",
-      "configuration_source": "service injection",
-      "criticality": "medium",
-      "connection_type": "direct",
-      "cross_repo": false
-    },
-    {
-      "connection_id": "pet_resource_to_kinesis",
-      "consumer_id": "pet_resource",
-      "provider_id": "kinesis_data_stream",
-      "provider_resource_type": "Kinesis",
-      "operation": "getRecords",
-      "access_type": "read",
-      "description": "Retrieves stream records from Kinesis when a pet is updated",
-      "code_snippet": "kinesisService.getStreamRecords();",
-      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
-      "target_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/KinesisService.java",
-      "configuration_source": "service injection",
-      "criticality": "medium",
-      "connection_type": "direct",
-      "cross_repo": false
-    },
-    {
-      "connection_id": "pet_resource_to_bedrock_agent",
-      "consumer_id": "pet_resource",
-      "provider_id": "bedrock_kb",
+      "connection_id": "titan_model_invocation",
+      "consumer_id": "bedrock_runtime_v1_consumer",
+      "provider_id": "bedrock_service",
       "provider_resource_type": "Bedrock",
-      "operation": "getKnowledgeBase",
+      "operation": "invokeModel",
       "access_type": "read",
-      "description": "Accesses Bedrock knowledge base for pet diagnosis",
-      "code_snippet": "bedrockAgentV1Service.getKnowledgeBase();",
-      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
-      "target_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockAgentV1Service.java",
-      "configuration_source": "service injection",
+      "description": "Invokes Titan text model to generate information about common diseases for specific pet types",
+      "code_snippet": "InvokeModelRequest invokeModelRequest = new InvokeModelRequest()\n    .withModelId(modelId)\n    .withBody(buffer);\nInvokeModelResult result = bedrockRuntimeV1Client.invokeModel(invokeModelRequest);",
+      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockRuntimeV1Service.java",
+      "target_file_path": "N/A",
+      "configuration_source": "environment variable",
       "criticality": "medium",
       "connection_type": "direct",
       "cross_repo": true,
-      "target_repo": "external-ai-models"
+      "target_repo": "N/A"
     },
     {
-      "connection_id": "pet_resource_to_bedrock_guardrails",
-      "consumer_id": "pet_resource",
+      "connection_id": "claude_model_invocation",
+      "consumer_id": "bedrock_runtime_v2_consumer",
+      "provider_id": "bedrock_claude_model",
+      "provider_resource_type": "Bedrock",
+      "operation": "invokeModel",
+      "access_type": "read",
+      "description": "Invokes Claude model to generate preventative measures for pet diseases",
+      "code_snippet": "InvokeModelRequest request = InvokeModelRequest.builder()\n    .body(SdkBytes.fromUtf8String(payload))\n    .modelId(claudeModelId)\n    .contentType(\"application/json\")\n    .accept(\"application/json\")\n    .build();\nInvokeModelResponse response = bedrockRuntimeV2Client.invokeModel(request);",
+      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockRuntimeV2Service.java",
+      "target_file_path": "N/A",
+      "configuration_source": "environment variable",
+      "criticality": "medium",
+      "connection_type": "direct",
+      "cross_repo": true,
+      "target_repo": "N/A"
+    },
+    {
+      "connection_id": "knowledge_base_retrieval_v1",
+      "consumer_id": "bedrock_agent_v1_consumer",
+      "provider_id": "bedrock_knowledge_base",
+      "provider_resource_type": "BedrockAgent",
+      "operation": "getKnowledgeBase",
+      "access_type": "read",
+      "description": "Lists and retrieves knowledge base information from Bedrock Agent",
+      "code_snippet": "ListKnowledgeBasesRequest listRequest = new ListKnowledgeBasesRequest();\nListKnowledgeBasesResult listResponse = bedrockAgentV1Client.listKnowledgeBases(listRequest);\nList<KnowledgeBaseSummary> summaries = listResponse.getKnowledgeBaseSummaries();\nGetKnowledgeBaseRequest request = new GetKnowledgeBaseRequest()\n    .withKnowledgeBaseId(knowledgeBaseId);\nGetKnowledgeBaseResult response = bedrockAgentV1Client.getKnowledgeBase(request);",
+      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockAgentV1Service.java",
+      "target_file_path": "N/A",
+      "configuration_source": "environment variable",
+      "criticality": "medium",
+      "connection_type": "direct",
+      "cross_repo": true,
+      "target_repo": "N/A"
+    },
+    {
+      "connection_id": "knowledge_base_retrieval_v2",
+      "consumer_id": "bedrock_agent_v2_consumer",
+      "provider_id": "bedrock_knowledge_base",
+      "provider_resource_type": "BedrockAgent",
+      "operation": "getKnowledgeBase",
+      "access_type": "read",
+      "description": "Lists and retrieves knowledge base information from Bedrock Agent using SDK v2",
+      "code_snippet": "ListKnowledgeBasesRequest listRequest = ListKnowledgeBasesRequest.builder().build();\nListKnowledgeBasesResponse listResponse = bedrockAgentV2Client.listKnowledgeBases(listRequest);\nGetKnowledgeBaseRequest request = GetKnowledgeBaseRequest.builder()\n    .knowledgeBaseId(knowledgeBaseId).build();\nGetKnowledgeBaseResponse response = bedrockAgentV2Client.getKnowledgeBase(request);",
+      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockAgentV2Service.java",
+      "target_file_path": "N/A",
+      "configuration_source": "environment variable",
+      "criticality": "medium",
+      "connection_type": "direct",
+      "cross_repo": true,
+      "target_repo": "N/A"
+    },
+    {
+      "connection_id": "guardrail_retrieval_v1",
+      "consumer_id": "bedrock_v1_consumer",
       "provider_id": "bedrock_guardrails",
       "provider_resource_type": "Bedrock",
       "operation": "getGuardrail",
       "access_type": "read",
-      "description": "Accesses Bedrock guardrails for content moderation",
-      "code_snippet": "bedrockV1Service.getGuardrail();",
-      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
-      "target_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockV1Service.java",
-      "configuration_source": "service injection",
+      "description": "Lists and retrieves guardrail information for AI content moderation",
+      "code_snippet": "ListGuardrailsRequest listRequest = new ListGuardrailsRequest();\nListGuardrailsResult listResponse = bedrockV1Client.listGuardrails(listRequest);\nGetGuardrailRequest request = new GetGuardrailRequest()\n    .withGuardrailIdentifier(guardRailId);\nGetGuardrailResult response = bedrockV1Client.getGuardrail(request);",
+      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockV1Service.java",
+      "target_file_path": "N/A",
+      "configuration_source": "environment variable",
       "criticality": "medium",
       "connection_type": "direct",
       "cross_repo": true,
-      "target_repo": "external-ai-models"
+      "target_repo": "N/A"
     },
     {
-      "connection_id": "pet_resource_to_bedrock_titan",
-      "consumer_id": "pet_resource",
-      "provider_id": "bedrock_runtime",
+      "connection_id": "guardrail_retrieval_v2",
+      "consumer_id": "bedrock_v2_consumer",
+      "provider_id": "bedrock_guardrails",
       "provider_resource_type": "Bedrock",
-      "operation": "invokeModel",
+      "operation": "getGuardrail",
       "access_type": "read",
-      "description": "Invokes Titan AI model to get information about pet diseases",
-      "code_snippet": "bedrockRuntimeV1Service.invokeTitanModel(petType);",
-      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
-      "target_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockRuntimeV1Service.java",
-      "configuration_source": "service injection",
+      "description": "Lists and retrieves guardrail information using SDK v2",
+      "code_snippet": "ListGuardrailsRequest listRequest = ListGuardrailsRequest.builder().build();\nListGuardrailsResponse listResponse = bedrockV2Client.listGuardrails(listRequest);\nGetGuardrailRequest request = GetGuardrailRequest.builder()\n    .guardrailIdentifier(guardRailId).build();\nGetGuardrailResponse response = bedrockV2Client.getGuardrail(request);",
+      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockV2Service.java",
+      "target_file_path": "N/A",
+      "configuration_source": "environment variable",
       "criticality": "medium",
       "connection_type": "direct",
       "cross_repo": true,
-      "target_repo": "external-ai-models"
+      "target_repo": "N/A"
     },
     {
-      "connection_id": "pet_resource_to_bedrock_claude",
-      "consumer_id": "pet_resource",
-      "provider_id": "bedrock_runtime_claude",
-      "provider_resource_type": "Bedrock",
-      "operation": "invokeModel",
-      "access_type": "read",
-      "description": "Invokes Claude AI model to get information about pet health",
-      "code_snippet": "bedrockRuntimeV2Service.invokeAnthropicClaude(petType);",
-      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
-      "target_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/BedrockRuntimeV2Service.java",
-      "configuration_source": "service injection",
-      "criticality": "medium",
-      "connection_type": "direct",
-      "cross_repo": true,
-      "target_repo": "external-ai-models"
-    },
-    {
-      "connection_id": "visit_resource_to_dynamodb",
-      "consumer_id": "visit_resource",
-      "provider_id": "dynamodb_table",
-      "provider_resource_type": "DynamoDB",
-      "operation": "putItem",
+      "connection_id": "kinesis_create_stream",
+      "consumer_id": "kinesis_service_consumer",
+      "provider_id": "kinesis_stream",
+      "provider_resource_type": "Kinesis",
+      "operation": "createStream",
       "access_type": "write",
-      "description": "Stores visit monitoring data in DynamoDB when a new visit is created",
-      "code_snippet": "ddbService.putItems();",
-      "source_file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/web/VisitResource.java",
-      "target_file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/aws/DdbService.java",
-      "configuration_source": "service injection",
-      "criticality": "medium",
+      "description": "Creates a Kinesis data stream for data collection",
+      "code_snippet": "CreateStreamRequest streamReq = CreateStreamRequest.builder()\n    .streamName(streamName)\n    .shardCount(1)\n    .build();\nkinesisClient.createStream(streamReq);",
+      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/KinesisService.java",
+      "target_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/KinesisService.java",
+      "configuration_source": "hardcoded",
+      "criticality": "high",
       "connection_type": "direct",
       "cross_repo": false
     },
     {
-      "connection_id": "vet_resource_to_s3",
-      "consumer_id": "vet_resource",
-      "provider_id": "s3_bucket",
+      "connection_id": "kinesis_get_records",
+      "consumer_id": "kinesis_service_consumer",
+      "provider_id": "kinesis_stream",
+      "provider_resource_type": "Kinesis",
+      "operation": "getRecords",
+      "access_type": "read",
+      "description": "Retrieves records from a Kinesis stream for processing",
+      "code_snippet": "GetRecordsRequest recordsRequest = GetRecordsRequest.builder()\n    .shardIterator(shardIterator)\n    .limit(1000)\n    .build();\nGetRecordsResponse result = kinesisClient.getRecords(recordsRequest);",
+      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/KinesisService.java",
+      "target_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/KinesisService.java",
+      "configuration_source": "hardcoded",
+      "criticality": "high",
+      "connection_type": "direct",
+      "cross_repo": false
+    },
+    {
+      "connection_id": "sqs_create_queue",
+      "consumer_id": "sqs_service_consumer",
+      "provider_id": "sqs_queue",
+      "provider_resource_type": "SQS",
+      "operation": "createQueue",
+      "access_type": "write",
+      "description": "Creates an SQS queue for message processing",
+      "code_snippet": "CreateQueueResponse createResult = sqs.createQueue(CreateQueueRequest.builder().queueName(QUEUE_NAME).build());",
+      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/SqsService.java",
+      "target_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/SqsService.java",
+      "configuration_source": "hardcoded",
+      "criticality": "high",
+      "connection_type": "direct",
+      "cross_repo": false
+    },
+    {
+      "connection_id": "sqs_send_message",
+      "consumer_id": "sqs_service_consumer",
+      "provider_id": "sqs_queue",
+      "provider_resource_type": "SQS",
+      "operation": "sendMessage",
+      "access_type": "write",
+      "description": "Sends a message to the SQS queue",
+      "code_snippet": "String queueUrl = sqs.getQueueUrl(GetQueueUrlRequest.builder().queueName(QUEUE_NAME).build()).queueUrl();\nSendMessageRequest sendMsgRequest = SendMessageRequest.builder()\n    .queueUrl(queueUrl)\n    .messageBody(\"hello world\")\n    .delaySeconds(5)\n    .build();\nsqs.sendMessage(sendMsgRequest);",
+      "source_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/SqsService.java",
+      "target_file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/aws/SqsService.java",
+      "configuration_source": "hardcoded",
+      "criticality": "high",
+      "connection_type": "direct",
+      "cross_repo": false
+    },
+    {
+      "connection_id": "s3_list_buckets",
+      "consumer_id": "s3_service_consumer",
+      "provider_id": "s3_service",
       "provider_resource_type": "S3",
       "operation": "listBuckets",
       "access_type": "read",
-      "description": "Lists S3 buckets when retrieving veterinarian information",
-      "code_snippet": "s3Service.listBuckets();",
-      "source_file_path": "spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/web/VetResource.java",
-      "target_file_path": "spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/aws/S3Service.java",
-      "configuration_source": "service injection",
+      "description": "Lists all S3 buckets accessible to the application",
+      "code_snippet": "s3Client.listBuckets();",
+      "source_file_path": "spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/aws/S3Service.java",
+      "target_file_path": "N/A",
+      "configuration_source": "environment variable",
       "criticality": "low",
       "connection_type": "direct",
       "cross_repo": true,
-      "target_repo": "monitoring-infrastructure"
+      "target_repo": "N/A"
+    },
+    {
+      "connection_id": "dynamodb_create_table",
+      "consumer_id": "dynamodb_service_consumer",
+      "provider_id": "dynamodb_table",
+      "provider_resource_type": "DynamoDB",
+      "operation": "createTable",
+      "access_type": "write",
+      "description": "Creates a DynamoDB table for storing application data",
+      "code_snippet": "CreateTableRequest request = CreateTableRequest.builder()\n    .tableName(tableName)\n    .keySchema(KeySchemaElement.builder()\n        .attributeName(\"id\")\n        .keyType(KeyType.HASH)\n        .build())\n    .attributeDefinitions(AttributeDefinition.builder()\n        .attributeName(\"id\")\n        .attributeType(ScalarAttributeType.S)\n        .build())\n    .provisionedThroughput(ProvisionedThroughput.builder()\n        .readCapacityUnits(1L)\n        .writeCapacityUnits(1L)\n        .build())\n    .build();\ndynamoDbClient.createTable(request);",
+      "source_file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/aws/DdbService.java",
+      "target_file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/aws/DdbService.java",
+      "configuration_source": "hardcoded",
+      "criticality": "high",
+      "connection_type": "direct",
+      "cross_repo": false
+    },
+    {
+      "connection_id": "dynamodb_put_item",
+      "consumer_id": "dynamodb_service_consumer",
+      "provider_id": "dynamodb_table",
+      "provider_resource_type": "DynamoDB",
+      "operation": "putItem",
+      "access_type": "write",
+      "description": "Writes data to a DynamoDB table",
+      "code_snippet": "MyItem item = new MyItem.Builder(timestamp).withSomeData(\"This is some data\").build();\ntable.putItem(item);",
+      "source_file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/aws/DdbService.java",
+      "target_file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/aws/DdbService.java",
+      "configuration_source": "hardcoded",
+      "criticality": "high",
+      "connection_type": "direct",
+      "cross_repo": false
     }
   ],
   "architecture": {
     "application_type": "microservice",
-    "infrastructure_pattern": "container-based",
-    "deployment_approach": "Kubernetes on EKS",
-    "configuration_management": "Spring application properties with environment variables for AWS resource configuration",
+    "infrastructure_pattern": "hybrid",
+    "deployment_approach": "container-based",
+    "configuration_management": "environment variables and configuration files",
     "critical_paths": [
       {
-        "name": "pet_management",
-        "description": "Pet creation and management flow with AWS integrations",
-        "components": ["customers_service", "pet_resource", "sqs_queue", "kinesis_data_stream"]
+        "path_name": "data_storage_path",
+        "description": "Visit data storage in DynamoDB",
+        "involved_components": ["dynamodb_service_consumer", "dynamodb_table"]
       },
       {
-        "name": "pet_diagnosis",
-        "description": "AI-powered pet diagnosis using Bedrock models",
-        "components": ["customers_service", "pet_resource", "bedrock_runtime", "bedrock_runtime_claude", "bedrock_kb"]
+        "path_name": "ai_assistance_path",
+        "description": "AI-powered pet disease information retrieval",
+        "involved_components": ["bedrock_runtime_v1_consumer", "bedrock_service", "bedrock_runtime_v2_consumer", "bedrock_claude_model"]
       },
       {
-        "name": "visit_tracking",
-        "description": "Pet visit recording with DynamoDB storage",
-        "components": ["visits_service", "visit_resource", "dynamodb_table"]
+        "path_name": "messaging_path",
+        "description": "Application messaging through SQS",
+        "involved_components": ["sqs_service_consumer", "sqs_queue"]
+      },
+      {
+        "path_name": "data_stream_path",
+        "description": "Real-time data processing through Kinesis",
+        "involved_components": ["kinesis_service_consumer", "kinesis_stream"]
       }
     ],
     "security_model": {
-      "authentication": "IAM roles via WebIdentityToken for EKS pods",
-      "authorization": "IAM policies attached to service accounts",
-      "service_account_integration": "EKS IRSA (IAM Roles for Service Accounts)"
+      "authentication": "IAM roles with web identity token for EKS, default credentials for EC2",
+      "authorization": "IAM policies (implied)",
+      "data_protection": "Default AWS service encryption"
     },
     "cross_repo_dependencies": {
       "provides_to": [],
       "consumes_from": [
-        {"repository": "external-ai-models", "resources": ["bedrock_runtime", "bedrock_runtime_claude", "bedrock_kb", "bedrock_guardrails"]},
-        {"repository": "monitoring-infrastructure", "resources": ["s3_bucket"]}
+        {"repository": "N/A", "resources": ["Bedrock Models", "Bedrock Knowledge Bases", "Bedrock Guardrails", "S3 Buckets"]}
       ],
       "shared_infrastructure": true
     }
