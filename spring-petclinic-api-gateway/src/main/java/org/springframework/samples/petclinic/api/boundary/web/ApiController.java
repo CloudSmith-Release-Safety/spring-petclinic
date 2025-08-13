@@ -63,7 +63,6 @@ public class ApiController {
 
     @GetMapping(value = "customer/diagnose/owners/{ownerId}/pets/{petId}")
     public Mono<Void> diagnosePet(final @PathVariable int ownerId, final @PathVariable int petId) {
-        log.info("DEBUG: Inside the diagnose API - diagnosePet");
         return customersServiceClient.diagnosePet(ownerId, petId);
     }
 
