@@ -106,7 +106,7 @@ public class ApiController {
 
     @PostMapping(value = "insurance/pet-insurances")
     public Mono<Void> addPetInsurance(final @RequestBody PetInsurance petInsurance) {
-        System.out.println(petInsurance.toString());
+        log.debug("Adding pet insurance: {}", petInsurance);
         return insuranceServiceClient.addPetInsurance(petInsurance);
     }
 
