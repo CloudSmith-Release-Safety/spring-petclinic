@@ -39,8 +39,8 @@ public class InsuranceServiceClient {
     public Flux<InsuranceDetail> getInsurances() {
         // return Flux.empty().cast(InsuranceDetail.class);
         return webClientBuilder.build().get()
-            // .uri("lb://insurance-service/insurances")
-            .uri("http://insurance-service/insurances/")
+            // Change from /insurances/ to /insurances/v2/
+            .uri("http://insurance-service/insurances/v2/")
             .retrieve()
             .bodyToFlux(InsuranceDetail.class);
     }
