@@ -40,7 +40,7 @@ public class BillingServiceClient {
     public Flux<BillingDetail> getBillings() {
         // return Flux.empty().cast(InsuranceDetail.class);
         return webClientBuilder.build().get()
-            .uri("http://billing-service/billings/")
+            .uri("http://billing-service/billings/v2/")  // Changed to v2
             .retrieve()
             .bodyToFlux(BillingDetail.class);
     }
