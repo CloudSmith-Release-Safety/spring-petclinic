@@ -29,14 +29,25 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
+* Client for the Billing Service microservice.
+ * 
+ * This client handles all communication with the billing service,
+ * which is responsible for managing pet clinic billing records.
+ * The service is discovered through Eureka using the service name "billing-service".
+ * 
  * @author Maciej Szarlinski
+ * @author lishaxia
  */
 @Component
 @RequiredArgsConstructor
 public class BillingServiceClient {
 
     private final WebClient.Builder webClientBuilder;
-
+    /**
+     * Retrieves all billing records from the billing service.
+     * 
+     * @return A Flux of BillingDetail objects containing all billing records
+     */
     public Flux<BillingDetail> getBillings() {
         // return Flux.empty().cast(InsuranceDetail.class);
         return webClientBuilder.build().get()
@@ -45,4 +56,20 @@ public class BillingServiceClient {
             .bodyToFlux(BillingDetail.class);
     }
 
+        /**
+     * Retrieves billing records filtered by priority level.
+     * 
+     * @param priority The priority level to filter by (low, medium, high)
+     * @return A Flux of BillingDetail objects filtered by the specified priority
+     * @throws WebClientResponseException if the billing service returns an error
+     */
+    public Flux<BillingDetail> getBillingsByPriority(String priority) {
+        return webClientBuilder.build().get()
+            .uri("http://billing-service/billings/by-priority/{priority}", priority)
+            .retrieve()
+            .bodyToFlux(BillingDetail.class);
+    }
+
 }
+
+
