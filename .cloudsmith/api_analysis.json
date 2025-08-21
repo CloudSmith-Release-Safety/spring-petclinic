@@ -5,18 +5,81 @@
   "provided_apis": [
     {
       "type": "rest",
-      "endpoint": "/api/gateway/owners/{ownerId}",
+      "endpoint": "/owners",
+      "method": "POST",
+      "service_name": "CustomerService",
+      "description": "Creates a new owner in the system",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/OwnerResource.java",
+      "parameters": {
+        "body": {
+          "type": "object",
+          "required": true,
+          "description": "Owner details",
+          "properties": {
+            "firstName": {
+              "type": "string",
+              "required": true,
+              "description": "Owner's first name"
+            },
+            "lastName": {
+              "type": "string",
+              "required": true,
+              "description": "Owner's last name"
+            },
+            "address": {
+              "type": "string",
+              "required": true,
+              "description": "Owner's address"
+            },
+            "city": {
+              "type": "string",
+              "required": true,
+              "description": "Owner's city"
+            },
+            "telephone": {
+              "type": "string",
+              "required": true,
+              "description": "Owner's telephone number"
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Owner created successfully",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "id": "integer",
+              "firstName": "string",
+              "lastName": "string",
+              "address": "string",
+              "city": "string",
+              "telephone": "string"
+            }
+          }
+        },
+        "400": {
+          "description": "Bad request - invalid parameters",
+          "content_type": "application/json"
+        }
+      }
+    },
+    {
+      "type": "rest",
+      "endpoint": "/owners/{ownerId}",
       "method": "GET",
-      "service_name": "ApiGatewayService",
-      "description": "Retrieves owner details with visits for their pets",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiGatewayController.java",
+      "service_name": "CustomerService",
+      "description": "Retrieves owner details by ID",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/OwnerResource.java",
       "parameters": {
         "path": [
           {
             "name": "ownerId",
             "type": "integer",
             "required": true,
-            "description": "The unique identifier of the owner"
+            "description": "The ID of the owner to retrieve"
           }
         ]
       },
@@ -38,26 +101,34 @@
           }
         },
         "400": {
-          "description": "Bad request - invalid parameters",
+          "description": "Bad request - invalid owner ID",
           "content_type": "application/json"
         }
       }
     },
     {
       "type": "rest",
-      "endpoint": "/api/customer/owners",
+      "endpoint": "/owners",
       "method": "GET",
       "service_name": "CustomerService",
-      "description": "Retrieves a list of all owners",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
+      "description": "Retrieves all owners",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/OwnerResource.java",
       "responses": {
         "200": {
-          "description": "List of owners retrieved successfully",
+          "description": "List of all owners",
           "content_type": "application/json",
           "schema": {
             "type": "array",
             "items": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": "integer",
+                "firstName": "string",
+                "lastName": "string",
+                "address": "string",
+                "city": "string",
+                "telephone": "string"
+              }
             }
           }
         }
@@ -65,76 +136,49 @@
     },
     {
       "type": "rest",
-      "endpoint": "/api/customer/owners/{ownerId}",
-      "method": "GET",
-      "service_name": "CustomerService",
-      "description": "Retrieves an owner by ID",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          }
-        ]
-      },
-      "responses": {
-        "200": {
-          "description": "Owner details retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object"
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/customer/owners/{ownerId}",
+      "endpoint": "/owners/{ownerId}",
       "method": "PUT",
       "service_name": "CustomerService",
-      "description": "Updates an existing owner",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
+      "description": "Updates an owner's information",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/OwnerResource.java",
       "parameters": {
         "path": [
           {
             "name": "ownerId",
             "type": "integer",
             "required": true,
-            "description": "The unique identifier of the owner"
+            "description": "The ID of the owner to update"
           }
         ],
         "body": {
           "type": "object",
           "required": true,
-          "description": "Owner data to update",
+          "description": "Updated owner details",
           "properties": {
             "firstName": {
               "type": "string",
               "required": true,
-              "description": "First name of the owner"
+              "description": "Owner's first name"
             },
             "lastName": {
               "type": "string",
               "required": true,
-              "description": "Last name of the owner"
+              "description": "Owner's last name"
             },
             "address": {
               "type": "string",
               "required": true,
-              "description": "Address of the owner"
+              "description": "Owner's address"
             },
             "city": {
               "type": "string",
               "required": true,
-              "description": "City where the owner lives"
+              "description": "Owner's city"
             },
             "telephone": {
               "type": "string",
               "required": true,
-              "description": "Telephone number of the owner"
+              "description": "Owner's telephone number"
             }
           }
         }
@@ -143,67 +187,27 @@
         "204": {
           "description": "Owner updated successfully",
           "content_type": "application/json"
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/customer/owners",
-      "method": "POST",
-      "service_name": "CustomerService",
-      "description": "Creates a new owner",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "body": {
-          "type": "object",
-          "required": true,
-          "description": "Owner data to create",
-          "properties": {
-            "firstName": {
-              "type": "string",
-              "required": true,
-              "description": "First name of the owner"
-            },
-            "lastName": {
-              "type": "string",
-              "required": true,
-              "description": "Last name of the owner"
-            },
-            "address": {
-              "type": "string",
-              "required": true,
-              "description": "Address of the owner"
-            },
-            "city": {
-              "type": "string",
-              "required": true,
-              "description": "City where the owner lives"
-            },
-            "telephone": {
-              "type": "string",
-              "required": true,
-              "description": "Telephone number of the owner"
-            }
-          }
-        }
-      },
-      "responses": {
-        "201": {
-          "description": "Owner created successfully",
+        },
+        "400": {
+          "description": "Bad request - invalid parameters",
+          "content_type": "application/json"
+        },
+        "404": {
+          "description": "Owner not found",
           "content_type": "application/json"
         }
       }
     },
     {
       "type": "rest",
-      "endpoint": "/api/customer/petTypes",
+      "endpoint": "/petTypes",
       "method": "GET",
       "service_name": "CustomerService",
       "description": "Retrieves all pet types",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
+      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
       "responses": {
         "200": {
-          "description": "List of pet types retrieved successfully",
+          "description": "List of all pet types",
           "content_type": "application/json",
           "schema": {
             "type": "array",
@@ -220,771 +224,9 @@
     },
     {
       "type": "rest",
-      "endpoint": "/api/customer/owners/{ownerId}/pets/{petId}",
-      "method": "GET",
-      "service_name": "CustomerService",
-      "description": "Retrieves pet information by owner ID and pet ID",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          },
-          {
-            "name": "petId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the pet"
-          }
-        ]
-      },
-      "responses": {
-        "200": {
-          "description": "Pet information retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object"
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/customer/diagnose/owners/{ownerId}/pets/{petId}",
-      "method": "GET",
-      "service_name": "CustomerService",
-      "description": "Diagnoses a pet using various AI services",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          },
-          {
-            "name": "petId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the pet"
-          }
-        ]
-      },
-      "responses": {
-        "200": {
-          "description": "Pet diagnosed successfully",
-          "content_type": "application/json"
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/customer/owners/{ownerId}/pets/{petId}",
-      "method": "PUT",
-      "service_name": "CustomerService",
-      "description": "Updates pet information",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          },
-          {
-            "name": "petId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the pet"
-          }
-        ],
-        "body": {
-          "type": "object",
-          "required": true,
-          "description": "Pet data to update",
-          "properties": {
-            "name": {
-              "type": "string",
-              "required": true,
-              "description": "Name of the pet"
-            },
-            "birthDate": {
-              "type": "string",
-              "required": true,
-              "description": "Birth date of the pet"
-            },
-            "typeId": {
-              "type": "integer",
-              "required": true,
-              "description": "Type identifier for the pet"
-            }
-          }
-        }
-      },
-      "responses": {
-        "204": {
-          "description": "Pet updated successfully",
-          "content_type": "application/json"
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/customer/owners/{ownerId}/pets",
-      "method": "POST",
-      "service_name": "CustomerService",
-      "description": "Adds a new pet to an owner",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          }
-        ],
-        "body": {
-          "type": "object",
-          "required": true,
-          "description": "Pet data to create",
-          "properties": {
-            "name": {
-              "type": "string",
-              "required": true,
-              "description": "Name of the pet"
-            },
-            "birthDate": {
-              "type": "string",
-              "required": true,
-              "description": "Birth date of the pet"
-            },
-            "typeId": {
-              "type": "integer",
-              "required": true,
-              "description": "Type identifier for the pet"
-            }
-          }
-        }
-      },
-      "responses": {
-        "201": {
-          "description": "Pet created successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object"
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/vet/vets",
-      "method": "GET",
-      "service_name": "VetService",
-      "description": "Retrieves a list of all vets",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "responses": {
-        "200": {
-          "description": "List of vets retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/visit/owners/{ownerId}/pets/{petId}/visits",
-      "method": "GET",
-      "service_name": "VisitService",
-      "description": "Retrieves visits for a pet",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          },
-          {
-            "name": "petId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the pet"
-          }
-        ]
-      },
-      "responses": {
-        "200": {
-          "description": "List of visits retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object",
-            "properties": {
-              "items": "array"
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/visit/owners/{ownerId}/pets/{petId}/visits",
-      "method": "POST",
-      "service_name": "VisitService",
-      "description": "Adds a new visit for a pet",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          },
-          {
-            "name": "petId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the pet"
-          }
-        ],
-        "body": {
-          "type": "object",
-          "required": true,
-          "description": "Visit details",
-          "properties": {
-            "date": {
-              "type": "string",
-              "required": true,
-              "description": "Date of the visit"
-            },
-            "description": {
-              "type": "string",
-              "required": true,
-              "description": "Description of the visit"
-            }
-          }
-        }
-      },
-      "responses": {
-        "201": {
-          "description": "Visit created successfully",
-          "content_type": "application/json"
-        },
-        "400": {
-          "description": "Bad request - invalid parameters",
-          "content_type": "application/json"
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/insurance/insurances",
-      "method": "GET",
-      "service_name": "InsuranceService",
-      "description": "Retrieves a list of all available insurances",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "responses": {
-        "200": {
-          "description": "List of insurances retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/billing/billings",
-      "method": "GET",
-      "service_name": "BillingService",
-      "description": "Retrieves a list of all billings",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "responses": {
-        "200": {
-          "description": "List of billings retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/insurance/pet-insurances",
-      "method": "POST",
-      "service_name": "InsuranceService",
-      "description": "Adds insurance for a pet",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "body": {
-          "type": "object",
-          "required": true,
-          "description": "Pet insurance details",
-          "properties": {
-            "pet_id": {
-              "type": "integer",
-              "required": true,
-              "description": "The unique identifier of the pet"
-            },
-            "insurance_id": {
-              "type": "integer",
-              "required": true,
-              "description": "The insurance identifier"
-            }
-          }
-        }
-      },
-      "responses": {
-        "201": {
-          "description": "Pet insurance added successfully",
-          "content_type": "application/json"
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/insurance/pet-insurances/{petId}",
-      "method": "PUT",
-      "service_name": "InsuranceService",
-      "description": "Updates insurance for a pet",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "petId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the pet"
-          }
-        ],
-        "body": {
-          "type": "object",
-          "required": true,
-          "description": "Pet insurance details to update",
-          "properties": {
-            "pet_id": {
-              "type": "integer",
-              "required": true,
-              "description": "The unique identifier of the pet"
-            },
-            "insurance_id": {
-              "type": "integer",
-              "required": true,
-              "description": "The insurance identifier"
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "Pet insurance updated successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object"
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/insurance/pet-insurances/{petId}",
-      "method": "GET",
-      "service_name": "InsuranceService",
-      "description": "Retrieves insurance for a pet",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "petId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the pet"
-          }
-        ]
-      },
-      "responses": {
-        "200": {
-          "description": "Pet insurance retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object"
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/payments/owners/{ownerId}/pets/{petId}",
-      "method": "GET",
-      "service_name": "PaymentService",
-      "description": "Retrieves payments for a pet",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          },
-          {
-            "name": "petId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the pet"
-          }
-        ]
-      },
-      "responses": {
-        "200": {
-          "description": "List of payments retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/payments/owners/{ownerId}/pets/{petId}/{paymentId}",
-      "method": "GET",
-      "service_name": "PaymentService",
-      "description": "Retrieves a specific payment for a pet",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          },
-          {
-            "name": "petId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the pet"
-          },
-          {
-            "name": "paymentId",
-            "type": "string",
-            "required": true,
-            "description": "The unique identifier of the payment"
-          }
-        ]
-      },
-      "responses": {
-        "200": {
-          "description": "Payment retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object"
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/payments/owners/{ownerId}/pets/{petId}",
-      "method": "POST",
-      "service_name": "PaymentService",
-      "description": "Adds a new payment for a pet",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          },
-          {
-            "name": "petId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the pet"
-          }
-        ],
-        "body": {
-          "type": "object",
-          "required": true,
-          "description": "Payment details",
-          "properties": {
-            "amount": {
-              "type": "number",
-              "required": true,
-              "description": "Payment amount"
-            },
-            "paymentMethod": {
-              "type": "string",
-              "required": true,
-              "description": "Payment method"
-            }
-          }
-        }
-      },
-      "responses": {
-        "201": {
-          "description": "Payment added successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object"
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/payments/clean-db",
-      "method": "DELETE",
-      "service_name": "PaymentService",
-      "description": "Cleans the payment database",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "responses": {
-        "200": {
-          "description": "Payment database cleaned successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object"
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/api/nutrition/facts/{petType}",
-      "method": "GET",
-      "service_name": "NutritionService",
-      "description": "Retrieves nutrition facts for a pet type",
-      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiController.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "petType",
-            "type": "string",
-            "required": true,
-            "description": "The type of pet"
-          }
-        ]
-      },
-      "responses": {
-        "200": {
-          "description": "Nutrition facts retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object"
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/owners",
-      "method": "POST",
-      "service_name": "OwnerService",
-      "description": "Creates a new owner",
-      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/OwnerResource.java",
-      "parameters": {
-        "body": {
-          "type": "object",
-          "required": true,
-          "description": "Owner data to create",
-          "properties": {
-            "firstName": {
-              "type": "string",
-              "required": true,
-              "description": "First name of the owner"
-            },
-            "lastName": {
-              "type": "string",
-              "required": true,
-              "description": "Last name of the owner"
-            },
-            "address": {
-              "type": "string",
-              "required": true,
-              "description": "Address of the owner"
-            },
-            "city": {
-              "type": "string",
-              "required": true,
-              "description": "City where the owner lives"
-            },
-            "telephone": {
-              "type": "string",
-              "required": true,
-              "description": "Telephone number of the owner"
-            }
-          }
-        }
-      },
-      "responses": {
-        "201": {
-          "description": "Owner created successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object"
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/owners/{ownerId}",
-      "method": "GET",
-      "service_name": "OwnerService",
-      "description": "Retrieves an owner by ID",
-      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/OwnerResource.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          }
-        ]
-      },
-      "responses": {
-        "200": {
-          "description": "Owner retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "object"
-          }
-        },
-        "400": {
-          "description": "Bad request - invalid parameters",
-          "content_type": "application/json"
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/owners",
-      "method": "GET",
-      "service_name": "OwnerService",
-      "description": "Retrieves a list of all owners",
-      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/OwnerResource.java",
-      "responses": {
-        "200": {
-          "description": "List of owners retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/owners/{ownerId}",
-      "method": "PUT",
-      "service_name": "OwnerService",
-      "description": "Updates an existing owner",
-      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/OwnerResource.java",
-      "parameters": {
-        "path": [
-          {
-            "name": "ownerId",
-            "type": "integer",
-            "required": true,
-            "description": "The unique identifier of the owner"
-          }
-        ],
-        "body": {
-          "type": "object",
-          "required": true,
-          "description": "Owner data to update",
-          "properties": {
-            "firstName": {
-              "type": "string",
-              "required": true,
-              "description": "First name of the owner"
-            },
-            "lastName": {
-              "type": "string",
-              "required": true,
-              "description": "Last name of the owner"
-            },
-            "address": {
-              "type": "string",
-              "required": true,
-              "description": "Address of the owner"
-            },
-            "city": {
-              "type": "string",
-              "required": true,
-              "description": "City where the owner lives"
-            },
-            "telephone": {
-              "type": "string",
-              "required": true,
-              "description": "Telephone number of the owner"
-            }
-          }
-        }
-      },
-      "responses": {
-        "204": {
-          "description": "Owner updated successfully",
-          "content_type": "application/json"
-        }
-      }
-    },
-    {
-      "type": "rest",
-      "endpoint": "/petTypes",
-      "method": "GET",
-      "service_name": "PetService",
-      "description": "Retrieves all pet types",
-      "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
-      "responses": {
-        "200": {
-          "description": "List of pet types retrieved successfully",
-          "content_type": "application/json",
-          "schema": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "rest",
       "endpoint": "/owners/{ownerId}/pets",
       "method": "POST",
-      "service_name": "PetService",
+      "service_name": "CustomerService",
       "description": "Creates a new pet for an owner",
       "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
       "parameters": {
@@ -993,28 +235,28 @@
             "name": "ownerId",
             "type": "integer",
             "required": true,
-            "description": "The unique identifier of the owner"
+            "description": "The ID of the pet's owner"
           }
         ],
         "body": {
           "type": "object",
           "required": true,
-          "description": "Pet data to create",
+          "description": "Pet details",
           "properties": {
             "name": {
               "type": "string",
               "required": true,
-              "description": "Name of the pet"
+              "description": "Pet's name"
             },
             "birthDate": {
               "type": "string",
               "required": true,
-              "description": "Birth date of the pet"
+              "description": "Pet's birth date in YYYY-MM-DD format"
             },
             "typeId": {
               "type": "integer",
               "required": true,
-              "description": "Type identifier for the pet"
+              "description": "ID of the pet type"
             }
           }
         }
@@ -1024,8 +266,22 @@
           "description": "Pet created successfully",
           "content_type": "application/json",
           "schema": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+              "id": "integer",
+              "name": "string",
+              "birthDate": "string",
+              "type": "object"
+            }
           }
+        },
+        "400": {
+          "description": "Bad request - invalid parameters",
+          "content_type": "application/json"
+        },
+        "404": {
+          "description": "Owner not found",
+          "content_type": "application/json"
         }
       }
     },
@@ -1033,8 +289,8 @@
       "type": "rest",
       "endpoint": "/diagnose/owners/*/pets/{petId}",
       "method": "GET",
-      "service_name": "PetService",
-      "description": "Diagnoses a pet using AI services",
+      "service_name": "CustomerService",
+      "description": "Diagnoses a pet using various AI services",
       "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
       "parameters": {
         "path": [
@@ -1042,13 +298,13 @@
             "name": "petId",
             "type": "integer",
             "required": true,
-            "description": "The unique identifier of the pet"
+            "description": "The ID of the pet to diagnose"
           }
         ]
       },
       "responses": {
         "204": {
-          "description": "Pet diagnosed successfully",
+          "description": "Diagnosis completed",
           "content_type": "application/json"
         }
       }
@@ -1057,7 +313,7 @@
       "type": "rest",
       "endpoint": "/owners/*/pets/{petId}",
       "method": "PUT",
-      "service_name": "PetService",
+      "service_name": "CustomerService",
       "description": "Updates a pet's information",
       "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
       "parameters": {
@@ -1066,33 +322,33 @@
             "name": "petId",
             "type": "integer",
             "required": true,
-            "description": "The unique identifier of the pet"
+            "description": "The ID of the pet to update"
           }
         ],
         "body": {
           "type": "object",
           "required": true,
-          "description": "Pet data to update",
+          "description": "Updated pet details",
           "properties": {
             "id": {
               "type": "integer",
               "required": true,
-              "description": "ID of the pet"
+              "description": "Pet ID"
             },
             "name": {
               "type": "string",
               "required": true,
-              "description": "Name of the pet"
+              "description": "Pet's name"
             },
             "birthDate": {
               "type": "string",
               "required": true,
-              "description": "Birth date of the pet"
+              "description": "Pet's birth date in YYYY-MM-DD format"
             },
             "typeId": {
               "type": "integer",
               "required": true,
-              "description": "Type identifier for the pet"
+              "description": "ID of the pet type"
             }
           }
         }
@@ -1101,6 +357,14 @@
         "204": {
           "description": "Pet updated successfully",
           "content_type": "application/json"
+        },
+        "400": {
+          "description": "Bad request - invalid parameters",
+          "content_type": "application/json"
+        },
+        "404": {
+          "description": "Pet not found",
+          "content_type": "application/json"
         }
       }
     },
@@ -1108,8 +372,8 @@
       "type": "rest",
       "endpoint": "/owners/*/pets/{petId}",
       "method": "GET",
-      "service_name": "PetService",
-      "description": "Retrieves detailed information about a pet including insurance and nutrition",
+      "service_name": "CustomerService",
+      "description": "Retrieves pet details including insurance and nutrition information",
       "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
       "parameters": {
         "path": [
@@ -1117,17 +381,31 @@
             "name": "petId",
             "type": "integer",
             "required": true,
-            "description": "The unique identifier of the pet"
+            "description": "The ID of the pet to retrieve"
           }
         ]
       },
       "responses": {
         "200": {
-          "description": "Pet details retrieved successfully",
+          "description": "Pet details with insurance and nutrition info",
           "content_type": "application/json",
           "schema": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+              "id": "integer",
+              "name": "string",
+              "birthDate": "string",
+              "type": "object",
+              "insurance_id": "string",
+              "insurance_name": "string",
+              "price": "number",
+              "nutritionFacts": "string"
+            }
           }
+        },
+        "404": {
+          "description": "Pet not found",
+          "content_type": "application/json"
         }
       }
     },
@@ -1136,16 +414,22 @@
       "endpoint": "/vets",
       "method": "GET",
       "service_name": "VetService",
-      "description": "Retrieves a list of all vets",
+      "description": "Retrieves all veterinarians",
       "file_path": "spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/web/VetResource.java",
       "responses": {
         "200": {
-          "description": "List of vets retrieved successfully",
+          "description": "List of all veterinarians",
           "content_type": "application/json",
           "schema": {
             "type": "array",
             "items": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": "integer",
+                "firstName": "string",
+                "lastName": "string",
+                "specialties": "array"
+              }
             }
           }
         }
@@ -1164,23 +448,23 @@
             "name": "petId",
             "type": "integer",
             "required": true,
-            "description": "The unique identifier of the pet"
+            "description": "The ID of the pet for the visit"
           }
         ],
         "body": {
           "type": "object",
           "required": true,
-          "description": "Visit data to create",
+          "description": "Visit details",
           "properties": {
             "date": {
               "type": "string",
               "required": true,
-              "description": "Date of the visit"
+              "description": "Visit date in YYYY-MM-DD format"
             },
             "description": {
               "type": "string",
               "required": true,
-              "description": "Description of the visit"
+              "description": "Visit description"
             }
           }
         }
@@ -1190,11 +474,17 @@
           "description": "Visit created successfully",
           "content_type": "application/json",
           "schema": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+              "id": "integer",
+              "petId": "integer",
+              "date": "string",
+              "description": "string"
+            }
           }
         },
         "400": {
-          "description": "Bad request - invalid parameters",
+          "description": "Bad request - invalid parameters or date more than 30 days in the future",
           "content_type": "application/json"
         }
       }
@@ -1204,7 +494,7 @@
       "endpoint": "/owners/*/pets/{petId}/visits",
       "method": "GET",
       "service_name": "VisitService",
-      "description": "Retrieves visits for a pet",
+      "description": "Retrieves visits for a specific pet",
       "file_path": "spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/web/VisitResource.java",
       "parameters": {
         "path": [
@@ -1212,18 +502,29 @@
             "name": "petId",
             "type": "integer",
             "required": true,
-            "description": "The unique identifier of the pet"
+            "description": "The ID of the pet"
           }
         ]
       },
       "responses": {
         "200": {
-          "description": "List of visits retrieved successfully",
+          "description": "List of visits for the pet",
           "content_type": "application/json",
           "schema": {
             "type": "object",
             "properties": {
-              "items": "array"
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": "integer",
+                    "petId": "integer",
+                    "date": "string",
+                    "description": "string"
+                  }
+                }
+              }
             }
           }
         }
@@ -1242,20 +543,83 @@
             "name": "petId",
             "type": "array",
             "required": true,
-            "description": "List of pet IDs to retrieve visits for"
+            "description": "List of pet IDs to retrieve visits for (comma-separated)"
           }
         ]
       },
       "responses": {
         "200": {
-          "description": "List of visits retrieved successfully",
+          "description": "List of visits for the specified pets",
           "content_type": "application/json",
           "schema": {
             "type": "object",
             "properties": {
-              "items": "array"
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": "integer",
+                    "petId": "integer",
+                    "date": "string",
+                    "description": "string"
+                  }
+                }
+              }
             }
           }
+        }
+      }
+    },
+    {
+      "type": "rest",
+      "endpoint": "/api/gateway/owners/{ownerId}",
+      "method": "GET",
+      "service_name": "ApiGatewayService",
+      "description": "Retrieves owner details with pets and visits information (aggregated data)",
+      "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiGatewayController.java",
+      "parameters": {
+        "path": [
+          {
+            "name": "ownerId",
+            "type": "integer",
+            "required": true,
+            "description": "The ID of the owner to retrieve"
+          }
+        ]
+      },
+      "responses": {
+        "200": {
+          "description": "Owner details with pets and their visits",
+          "content_type": "application/json",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "id": "integer",
+              "firstName": "string",
+              "lastName": "string",
+              "address": "string",
+              "city": "string",
+              "telephone": "string",
+              "pets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": "integer",
+                    "name": "string",
+                    "birthDate": "string",
+                    "type": "object",
+                    "visits": "array"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad request",
+          "content_type": "application/json"
         }
       }
     }
@@ -1266,8 +630,11 @@
       "service": "CustomerService",
       "endpoint": "/owners/{ownerId}",
       "method": "GET",
-      "description": "Retrieves owner details",
+      "description": "Retrieves owner details from the customer service",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/CustomersServiceClient.java",
+      "request_payload": {
+        "ownerId": "integer"
+      },
       "expected_response": {
         "id": "integer",
         "firstName": "string",
@@ -1283,21 +650,25 @@
       "service": "CustomerService",
       "endpoint": "/owners",
       "method": "GET",
-      "description": "Retrieves all owners",
+      "description": "Retrieves all owners from the customer service",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/CustomersServiceClient.java",
-      "expected_response": {
-        "type": "array",
-        "items": {
-          "type": "object"
+      "expected_response": [
+        {
+          "id": "integer",
+          "firstName": "string",
+          "lastName": "string",
+          "address": "string",
+          "city": "string",
+          "telephone": "string"
         }
-      }
+      ]
     },
     {
       "type": "rest",
       "service": "CustomerService",
       "endpoint": "/owners/{ownerId}",
       "method": "PUT",
-      "description": "Updates an owner",
+      "description": "Updates an owner's information",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/CustomersServiceClient.java",
       "request_payload": {
         "firstName": "string",
@@ -1329,26 +700,29 @@
       "method": "GET",
       "description": "Retrieves all pet types",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/CustomersServiceClient.java",
-      "expected_response": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "id": "integer",
-            "name": "string"
-          }
+      "expected_response": [
+        {
+          "id": "integer",
+          "name": "string"
         }
-      }
+      ]
     },
     {
       "type": "rest",
       "service": "CustomerService",
       "endpoint": "/owners/{ownerId}/pets/{petId}",
       "method": "GET",
-      "description": "Retrieves pet information",
+      "description": "Retrieves pet details including insurance and nutrition information",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/CustomersServiceClient.java",
       "expected_response": {
-        "type": "object"
+        "id": "integer",
+        "name": "string",
+        "birthDate": "string",
+        "type": "object",
+        "insurance_id": "string",
+        "insurance_name": "string",
+        "price": "number",
+        "nutritionFacts": "string"
       }
     },
     {
@@ -1356,7 +730,7 @@
       "service": "CustomerService",
       "endpoint": "/diagnose/owners/{ownerId}/pets/{petId}",
       "method": "GET",
-      "description": "Diagnoses a pet",
+      "description": "Diagnoses a pet using various AI services",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/CustomersServiceClient.java"
     },
     {
@@ -1364,7 +738,7 @@
       "service": "CustomerService",
       "endpoint": "/owners/{ownerId}/pets/{petId}",
       "method": "PUT",
-      "description": "Updates a pet",
+      "description": "Updates a pet's information",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/CustomersServiceClient.java",
       "request_payload": {
         "name": "string",
@@ -1377,7 +751,7 @@
       "service": "CustomerService",
       "endpoint": "/owners/{ownerId}/pets",
       "method": "POST",
-      "description": "Creates a new pet",
+      "description": "Creates a new pet for an owner",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/CustomersServiceClient.java",
       "request_payload": {
         "name": "string",
@@ -1385,6 +759,9 @@
         "typeId": "integer"
       },
       "expected_response": {
+        "id": "integer",
+        "name": "string",
+        "birthDate": "string",
         "type": "object"
       }
     },
@@ -1393,14 +770,16 @@
       "service": "VetService",
       "endpoint": "/vets",
       "method": "GET",
-      "description": "Retrieves all vets",
+      "description": "Retrieves all veterinarians",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/VetsServiceClient.java",
-      "expected_response": {
-        "type": "array",
-        "items": {
-          "type": "object"
+      "expected_response": [
+        {
+          "id": "integer",
+          "firstName": "string",
+          "lastName": "string",
+          "specialties": "array"
         }
-      }
+      ]
     },
     {
       "type": "rest",
@@ -1409,11 +788,18 @@
       "method": "GET",
       "description": "Retrieves visits for multiple pets",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/VisitsServiceClient.java",
+      "request_payload": {
+        "petId": "string (comma-separated ids)"
+      },
       "expected_response": {
-        "type": "object",
-        "properties": {
-          "items": "array"
-        }
+        "items": [
+          {
+            "id": "integer",
+            "petId": "integer",
+            "date": "string",
+            "description": "string"
+          }
+        ]
       }
     },
     {
@@ -1421,13 +807,17 @@
       "service": "VisitService",
       "endpoint": "/owners/{ownerId}/pets/{petId}/visits",
       "method": "GET",
-      "description": "Retrieves visits for a pet",
+      "description": "Retrieves visits for a specific pet",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/VisitsServiceClient.java",
       "expected_response": {
-        "type": "object",
-        "properties": {
-          "items": "array"
-        }
+        "items": [
+          {
+            "id": "integer",
+            "petId": "integer",
+            "date": "string",
+            "description": "string"
+          }
+        ]
       }
     },
     {
@@ -1435,7 +825,7 @@
       "service": "VisitService",
       "endpoint": "/owners/{ownerId}/pets/{petId}/visits",
       "method": "POST",
-      "description": "Creates a new visit",
+      "description": "Creates a new visit for a pet",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/VisitsServiceClient.java",
       "request_payload": {
         "date": "string",
@@ -1448,14 +838,16 @@
       "service": "InsuranceService",
       "endpoint": "/insurances",
       "method": "GET",
-      "description": "Retrieves all insurances",
+      "description": "Retrieves all insurance plans",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/InsuranceServiceClient.java",
-      "expected_response": {
-        "type": "array",
-        "items": {
-          "type": "object"
+      "expected_response": [
+        {
+          "id": "string",
+          "name": "string",
+          "price": "number",
+          "description": "string"
         }
-      }
+      ]
     },
     {
       "type": "rest",
@@ -1466,7 +858,9 @@
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/InsuranceServiceClient.java",
       "request_payload": {
         "pet_id": "integer",
-        "insurance_id": "integer"
+        "insurance_id": "string",
+        "insurance_name": "string",
+        "price": "number"
       }
     },
     {
@@ -1478,10 +872,15 @@
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/InsuranceServiceClient.java",
       "request_payload": {
         "pet_id": "integer",
-        "insurance_id": "integer"
+        "insurance_id": "string",
+        "insurance_name": "string",
+        "price": "number"
       },
       "expected_response": {
-        "type": "object"
+        "pet_id": "integer",
+        "insurance_id": "string",
+        "insurance_name": "string",
+        "price": "number"
       }
     },
     {
@@ -1489,10 +888,13 @@
       "service": "InsuranceService",
       "endpoint": "/pet-insurances/{petId}",
       "method": "GET",
-      "description": "Retrieves pet insurance",
+      "description": "Retrieves insurance for a specific pet",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/InsuranceServiceClient.java",
       "expected_response": {
-        "type": "object"
+        "pet_id": "integer",
+        "insurance_id": "string",
+        "insurance_name": "string",
+        "price": "number"
       }
     },
     {
@@ -1503,7 +905,8 @@
       "description": "Retrieves nutrition information for a pet type",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/NutritionServiceClient.java",
       "expected_response": {
-        "type": "object"
+        "type": "string",
+        "facts": "string"
       }
     },
     {
@@ -1511,38 +914,51 @@
       "service": "BillingService",
       "endpoint": "/billings",
       "method": "GET",
-      "description": "Retrieves all billings",
+      "description": "Retrieves all billing records",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/BillingServiceClient.java",
-      "expected_response": {
-        "type": "array",
-        "items": {
-          "type": "object"
+      "expected_response": [
+        {
+          "id": "string",
+          "owner_id": "integer",
+          "pet_id": "integer",
+          "amount": "number",
+          "date": "string",
+          "description": "string"
         }
-      }
+      ]
     },
     {
       "type": "rest",
       "service": "PaymentService",
       "endpoint": "/owners/{ownerId}/pets/{petId}/payments",
       "method": "GET",
-      "description": "Retrieves payments for a pet",
+      "description": "Retrieves payments for a specific pet",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/PaymentClient.java",
-      "expected_response": {
-        "type": "array",
-        "items": {
-          "type": "object"
+      "expected_response": [
+        {
+          "id": "string",
+          "owner_id": "integer",
+          "pet_id": "integer",
+          "amount": "number",
+          "date": "string",
+          "payment_method": "string"
         }
-      }
+      ]
     },
     {
       "type": "rest",
       "service": "PaymentService",
       "endpoint": "/owners/{ownerId}/pets/{petId}/payments/{paymentId}",
       "method": "GET",
-      "description": "Retrieves a specific payment",
+      "description": "Retrieves a specific payment by ID",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/PaymentClient.java",
       "expected_response": {
-        "type": "object"
+        "id": "string",
+        "owner_id": "integer",
+        "pet_id": "integer",
+        "amount": "number",
+        "date": "string",
+        "payment_method": "string"
       }
     },
     {
@@ -1550,14 +966,19 @@
       "service": "PaymentService",
       "endpoint": "/owners/{ownerId}/pets/{petId}/payments",
       "method": "POST",
-      "description": "Creates a new payment",
+      "description": "Creates a payment for a pet",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/PaymentClient.java",
       "request_payload": {
         "amount": "number",
-        "paymentMethod": "string"
+        "payment_method": "string"
       },
       "expected_response": {
-        "type": "object"
+        "id": "string",
+        "owner_id": "integer",
+        "pet_id": "integer",
+        "amount": "number",
+        "date": "string",
+        "payment_method": "string"
       }
     },
     {
@@ -1565,10 +986,15 @@
       "service": "PaymentService",
       "endpoint": "/clean-db",
       "method": "DELETE",
-      "description": "Cleans the payment database",
+      "description": "Cleans the payment database (for testing)",
       "file_path": "spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/PaymentClient.java",
       "expected_response": {
-        "type": "object"
+        "id": "string",
+        "owner_id": "integer",
+        "pet_id": "integer",
+        "amount": "number",
+        "date": "string",
+        "payment_method": "string"
       }
     },
     {
@@ -1576,15 +1002,13 @@
       "service": "InsuranceService",
       "endpoint": "/pet-insurances/{petId}",
       "method": "GET",
-      "description": "Retrieves insurance information for a pet",
+      "description": "Retrieves insurance information for a specific pet",
       "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
       "expected_response": {
-        "type": "object",
-        "properties": {
-          "insurance_id": "integer",
-          "insurance_name": "string",
-          "price": "number"
-        }
+        "insurance_id": "string",
+        "insurance_name": "string",
+        "price": "number",
+        "pet_id": "integer"
       }
     },
     {
@@ -1595,10 +1019,8 @@
       "description": "Retrieves nutrition information for a pet type",
       "file_path": "spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/PetResource.java",
       "expected_response": {
-        "type": "object",
-        "properties": {
-          "facts": "string"
-        }
+        "type": "string",
+        "facts": "string"
       }
     }
   ]
