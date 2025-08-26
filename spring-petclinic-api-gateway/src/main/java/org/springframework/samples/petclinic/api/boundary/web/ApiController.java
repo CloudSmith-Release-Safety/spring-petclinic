@@ -99,11 +99,27 @@ public class ApiController {
         return insuranceServiceClient.getInsurances();
     }
 
+     /**
+     * Retrieves all billing records.
+     * 
+     * @return A Flux of BillingDetail objects containing all billing records
+     */
     @GetMapping(value = "billing/billings")
     public Flux<BillingDetail> getBillings() {
         return billingServiceClient.getBillings();
     }
-
+     
+     /**
+     * Retrieves billing records filtered by priority level.
+     * This endpoint allows filtering billing records by their priority (low, medium, high).
+     * 
+     * @param priority The priority level to filter by (low, medium, high)
+     * @return A Flux of BillingDetail objects filtered by the specified priority
+     */
+    @GetMapping(value = "billing/billings/priority/{priority}")
+    public Flux<BillingDetail> getBillingsByPriority(@PathVariable String priority) {
+        return billingServiceClient.getBillingsByPriority(priority);
+    }
     @PostMapping(value = "insurance/pet-insurances")
     public Mono<Void> addPetInsurance(final @RequestBody PetInsurance petInsurance) {
         System.out.println(petInsurance.toString());

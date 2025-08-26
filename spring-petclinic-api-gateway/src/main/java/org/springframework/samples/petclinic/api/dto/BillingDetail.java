@@ -22,4 +22,6 @@ public class BillingDetail {
 
     private String status;
 
+    private String priority;
+
 }
