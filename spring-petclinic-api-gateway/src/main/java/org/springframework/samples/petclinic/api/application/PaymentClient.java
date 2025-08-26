@@ -36,14 +36,14 @@ public class PaymentClient {
 
     public Flux<PaymentDetail> getPayments(final int ownerId, final int petId) {
         return webClientBuilder.build().get()
-                .uri("http://payment-service/owners/{ownerId}/pets/{petId}/payments", ownerId, petId)
+                .uri("http://payment-service/api/v2/owners/{ownerId}/pets/{petId}/payments", ownerId, petId)
                 .retrieve()
                 .bodyToFlux(PaymentDetail.class);
     }
 
     public Mono<PaymentDetail> getPaymentById(final int ownerId, final int petId, final String paymentId) {
         return webClientBuilder.build().get()
-                .uri("http://payment-service/owners/{ownerId}/pets/{petId}/payments/{paymentId}", ownerId, petId,
+                .uri("http://payment-service/api/v2/owners/{ownerId}/pets/{petId}/payments/{paymentId}", ownerId, petId,
                         paymentId)
                 .retrieve()
                 .bodyToMono(PaymentDetail.class);
@@ -51,7 +51,7 @@ public class PaymentClient {
 
     public Mono<PaymentDetail> addPayment(final int ownerId, final int petId, final PaymentAdd paymentAdd) {
         return webClientBuilder.build().post()
-                .uri("http://payment-service/owners/{ownerId}/pets/{petId}/payments", ownerId, petId)
+                .uri("http://payment-service/api/v2/owners/{ownerId}/pets/{petId}/payments", ownerId, petId)
                 .body(Mono.just(paymentAdd), PaymentAdd.class)
                 .retrieve()
                 .bodyToMono(PaymentDetail.class);
