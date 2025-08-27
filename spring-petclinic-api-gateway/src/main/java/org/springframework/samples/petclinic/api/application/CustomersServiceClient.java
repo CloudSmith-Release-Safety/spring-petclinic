@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import io.opentelemetry.instrumentation.annotations.SpanAttribute;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.api.dto.*;
 import org.springframework.samples.petclinic.api.utils.WellKnownAttributes;
@@ -41,15 +42,18 @@ import org.springframework.web.server.ResponseStatusException;
 public class CustomersServiceClient {
 
     private final WebClient.Builder webClientBuilder;
+    
+    @Value("${services.customers.url:http://customers-service}")
+    private String customersServiceUrl;
 
     public Flux<OwnerDetails> getOwners() {
-        return fluxQuery(OwnerDetails.class, "customers-service", "/owners");
+        return fluxQuery(OwnerDetails.class, customersServiceUrl, "/owners");
     }
 
     @WithSpan
     public Mono<OwnerDetails> getOwner(final int ownerId) {
         return webClientBuilder.build().get()
-            .uri("http://customers-service/owners/{ownerId}", ownerId)
+            .uri(customersServiceUrl + "/owners/{ownerId}", ownerId)
             .retrieve()
             .onStatus(
                 HttpStatus.BAD_REQUEST::equals,
@@ -60,7 +64,7 @@ public class CustomersServiceClient {
 //    @WithSpan
     public Mono<Void> updateOwner(final int ownerId, final OwnerRequest ownerRequest) {
         return webClientBuilder.build().put()
-            .uri("http://customers-service/owners/{ownerId}", ownerId)
+            .uri(customersServiceUrl + "/owners/{ownerId}", ownerId)
             .body(Mono.just(ownerRequest), OwnerRequest.class)
             .retrieve()
             .bodyToMono(Void.class);
@@ -69,20 +73,20 @@ public class CustomersServiceClient {
     @WithSpan
     public Mono<Void> addOwner(final OwnerRequest ownerRequest) {
         return webClientBuilder.build().post()
-            .uri("http://customers-service/owners")
+            .uri(customersServiceUrl + "/owners")
             .body(Mono.just(ownerRequest), OwnerRequest.class)
             .retrieve()
             .bodyToMono(Void.class);
     }
 
     public Flux<PetType> getPetTypes() {
-        return fluxQuery(PetType.class, "customers-service", "/petTypes");
+        return fluxQuery(PetType.class, customersServiceUrl, "/petTypes");
     }
 
     @WithSpan
     public Mono<PetFull> getPet(final int ownerId, final int petId) {
         return webClientBuilder.build().get()
-            .uri("http://customers-service/owners/{ownerId}/pets/{petId}", ownerId, petId)
+            .uri(customersServiceUrl + "/owners/{ownerId}/pets/{petId}", ownerId, petId)
             .retrieve()
             .bodyToMono(PetFull.class);
     }
@@ -91,14 +95,14 @@ public class CustomersServiceClient {
     public Mono<Void> diagnosePet(final int ownerId, final int petId) {
         log.info("DEBUG: Inside the diagnose API");
         return webClientBuilder.build().get()
-                .uri("http://customers-service/diagnose/owners/{ownerId}/pets/{petId}", ownerId, petId)
+                .uri(customersServiceUrl + "/diagnose/owners/{ownerId}/pets/{petId}", ownerId, petId)
                 .retrieve()
                 .bodyToMono(Void.class);
     }
     @WithSpan
     public Mono<Void> updatePet(final int ownerId, final int petId, final PetRequest petRequest) {
         return webClientBuilder.build().put()
-            .uri("http://customers-service/owners/{ownerId}/pets/{petId}", ownerId, petId)
+            .uri(customersServiceUrl + "/owners/{ownerId}/pets/{petId}", ownerId, petId)
             .body(Mono.just(petRequest), PetRequest.class)
             .retrieve()
             .bodyToMono(Void.class);
@@ -107,7 +111,7 @@ public class CustomersServiceClient {
     @WithSpan
     public Mono<PetFull> addPet(final int ownerId, final PetRequest petRequest) {
         return webClientBuilder.build().post()
-            .uri("http://customers-service/owners/{ownerId}/pets", ownerId)
+            .uri(customersServiceUrl + "/owners/{ownerId}/pets", ownerId)
             .body(Mono.just(petRequest), PetRequest.class)
             .retrieve()
             .bodyToMono(PetFull.class);
