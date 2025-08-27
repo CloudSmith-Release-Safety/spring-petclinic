@@ -38,7 +38,8 @@ public class PaymentClient {
         return webClientBuilder.build().get()
                 .uri("http://payment-service/owners/{ownerId}/pets/{petId}/payments", ownerId, petId)
                 .retrieve()
-                .bodyToFlux(PaymentDetail.class);
+                .bodyToFlux(PaymentDetail.class)
+                .map(this::normalizePaymentResponse);
     }
 
     public Mono<PaymentDetail> getPaymentById(final int ownerId, final int petId, final String paymentId) {
@@ -46,7 +47,8 @@ public class PaymentClient {
                 .uri("http://payment-service/owners/{ownerId}/pets/{petId}/payments/{paymentId}", ownerId, petId,
                         paymentId)
                 .retrieve()
-                .bodyToMono(PaymentDetail.class);
+                .bodyToMono(PaymentDetail.class)
+                .map(this::normalizePaymentResponse);
     }
 
     public Mono<PaymentDetail> addPayment(final int ownerId, final int petId, final PaymentAdd paymentAdd) {
@@ -54,7 +56,23 @@ public class PaymentClient {
                 .uri("http://payment-service/owners/{ownerId}/pets/{petId}/payments", ownerId, petId)
                 .body(Mono.just(paymentAdd), PaymentAdd.class)
                 .retrieve()
-                .bodyToMono(PaymentDetail.class);
+                .bodyToMono(PaymentDetail.class)
+                .map(this::normalizePaymentResponse);
+    }
+
+    /**
+     * Normalize payment response to handle both old and new field formats
+     * Supports transition from old format {id, amount} to new format {paymentId, totalAmount}
+     */
+    private PaymentDetail normalizePaymentResponse(PaymentDetail payment) {
+        // Handle new response format if present
+        if (payment.getId() == null && payment.getPaymentId() != null) {
+            payment.setId(payment.getPaymentId());
+        }
+        if (payment.getAmount() == null && payment.getTotalAmount() != null) {
+            payment.setAmount(payment.getTotalAmount());
+        }
+        return payment;
     }
 
     public Mono<PaymentDetail> cleanPaymentTable() {
