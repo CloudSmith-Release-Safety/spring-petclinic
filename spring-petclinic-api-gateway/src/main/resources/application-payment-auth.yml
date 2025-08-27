@@ -1,0 +1,41 @@
+# Payment Service Authentication Configuration
+# Required for payment service v7.0.0 JWT authentication
+
+payment:
+  service:
+    jwt:
+      # JWT token for payment service authentication
+      # Set via environment variable: PAYMENT_SERVICE_JWT_TOKEN
+      token: ${PAYMENT_SERVICE_JWT_TOKEN:}
+      
+      # Token refresh configuration
+      refresh:
+        enabled: true
+        interval: 3600 # 1 hour
+        
+    # Authentication retry configuration  
+    auth:
+      retry:
+        max-attempts: 3
+        backoff-delay: 1000
+        
+    # Error handling configuration
+    error:
+      authentication:
+        log-level: ERROR
+        include-stack-trace: false
+
+# Logging configuration for payment authentication
+logging:
+  level:
+    org.springframework.samples.petclinic.api.application.PaymentClient: DEBUG
+    
+# Actuator endpoints for monitoring authentication
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
