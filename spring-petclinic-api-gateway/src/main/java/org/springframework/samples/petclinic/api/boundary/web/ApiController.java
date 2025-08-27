@@ -99,9 +99,26 @@ public class ApiController {
         return insuranceServiceClient.getInsurances();
     }
 
+    /**
+     * Retrieves all billing records.
+     * 
+     * @return A Flux of BillingDetail objects containing all billing records
+     */
     @GetMapping(value = "billing/billings")
     public Flux<BillingDetail> getBillings() {
         return billingServiceClient.getBillings();
+    }
+    
+    /**
+     * Retrieves billing records filtered by status.
+     * This endpoint allows filtering billing records by their status (pending, paid, overdue, cancelled).
+     * 
+     * @param status The status to filter by (pending, paid, overdue, cancelled)
+     * @return A Flux of BillingDetail objects filtered by the specified status
+     */
+    @GetMapping(value = "billing/billings/status/{status}")
+    public Flux<BillingDetail> getBillingsByStatus(@PathVariable String status) {
+        return billingServiceClient.getBillingsByStatus(status);
     }
 
     @PostMapping(value = "insurance/pet-insurances")
