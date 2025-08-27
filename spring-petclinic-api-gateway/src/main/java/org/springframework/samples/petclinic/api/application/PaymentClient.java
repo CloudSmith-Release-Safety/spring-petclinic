@@ -19,6 +19,9 @@
 
 package org.springframework.samples.petclinic.api.application;
 
+// REMOVED: Legacy payment processing methods
+// This change removes calls to deprecated payment endpoints
+
 import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
