@@ -4,6 +4,15 @@ spring:
   config:
     import: optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888/}
 
+# Service configuration for local development
+services:
+  customers:
+    url: ${CUSTOMERS_SERVICE_URL:http://localhost:8081}
+  visits:
+    url: ${VISITS_SERVICE_URL:http://localhost:8082}
+  vets:
+    url: ${VETS_SERVICE_URL:http://localhost:8083}
+
 eureka:
   instance:
     preferIpAddress: true
@@ -26,12 +35,30 @@ spring:
       on-profile: docker
     import: configserver:http://config-server:8888
 
+# Docker profile service configuration
+services:
+  customers:
+    url: http://customers-service:8080
+  visits:
+    url: http://visits-service:8080
+  vets:
+    url: http://vets-service:8080
+
 ---
 # Prod profile
 spring:
   config:
     activate:
       on-profile: ecs
+
+# ECS profile service configuration
+services:
+  customers:
+    url: ${CUSTOMERS_SERVICE_URL:http://customers-service}
+  visits:
+    url: ${VISITS_SERVICE_URL:http://visits-service}
+  vets:
+    url: ${VETS_SERVICE_URL:http://vets-service}
 
 eureka:
   instance:
@@ -43,6 +70,15 @@ spring:
   config:
     activate:
       on-profile: ec2
+
+# EC2 profile service configuration
+services:
+  customers:
+    url: ${CUSTOMERS_SERVICE_URL:http://customers-service.demo.local}
+  visits:
+    url: ${VISITS_SERVICE_URL:http://visits-service.demo.local}
+  vets:
+    url: ${VETS_SERVICE_URL:http://vets-service.demo.local}
 
 eureka:
   instance:
